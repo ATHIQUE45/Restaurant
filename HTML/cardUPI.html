@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment Page</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f7f7f7;
+      padding: 2rem;
+    }
+
+    .payment-section {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .payment-section h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #d35400;
+    }
+
+    .payment-options {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .payment-options label {
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .details-area {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: all 0.5s ease;
+      margin-bottom: 1rem;
+    }
+
+    .details-area.show {
+      max-height: 200px;
+      opacity: 1;
+      margin-top: 1rem;
+    }
+
+    .details-area input, .details-area textarea {
+      width: 100%;
+      padding: 0.6rem;
+      margin-bottom: 1rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    .pay-btn {
+      background-color: #27ae60;
+      color: white;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+    }
+
+    .pay-btn:hover {
+      background-color: #2ecc71;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="payment-section">
+    <h2>Choose Payment Method</h2>
+
+    <div class="payment-options">
+      <label><input type="radio" name="payment" value="Cash" checked> Cash</label>
+      <label><input type="radio" name="payment" value="Card"> Card</label>
+      <label><input type="radio" name="payment" value="UPI"> UPI</label>
+    </div>
+
+    <!-- Dynamic Fields -->
+    <div id="payment-details-area" class="details-area">
+      <!-- Will be loaded dynamically -->
+    </div>
+
+    <button class="pay-btn" id="place-order-btn">Place Order</button>
+  </div>
+
+  <script>
+    const paymentRadios = document.querySelectorAll('input[name="payment"]');
+    const paymentDetailsArea = document.getElementById('payment-details-area');
+    const placeOrderBtn = document.getElementById('place-order-btn');
+
+    // Simulated selected item
+    const selectedItem = "Butter Chicken";
+    const selectedQuantity = 2;
+
+    // Function to update dynamic inputs
+    function updatePaymentDetails(method) {
+      let html = '';
+      if (method === 'Cash') {
+        html = `
+          <label>Delivery Address:</label>
+          <textarea placeholder="Enter delivery address..." required></textarea>
+        `;
+      } else if (method === 'UPI') {
+        html = `
+          <label>UPI ID:</label>
+          <input type="text" placeholder="Enter your UPI ID (e.g., name@upi)" required />
+        `;
+      } else {
+        html = ''; // You can add card fields later if needed
+      }
+
+      paymentDetailsArea.innerHTML = html;
+      paymentDetailsArea.classList.toggle('show', html !== '');
+    }
+
+    // Initial load
+    updatePaymentDetails('Cash');
+
+    // On change of payment method
+    paymentRadios.forEach(radio => {
+      radio.addEventListener('change', () => {
+        const selectedMethod = document.querySelector('input[name="payment"]:checked').value;
+        updatePaymentDetails(selectedMethod);
+      });
+    });
+
+    // Handle final place order
+    placeOrderBtn.addEventListener('click', () => {
+      const method = document.querySelector('input[name="payment"]:checked').value;
+      const inputField = paymentDetailsArea.querySelector('input, textarea');
+
+      if (inputField && inputField.value.trim() === '') {
+        alert(`❗ Please enter your ${method === 'Cash' ? 'address' : 'UPI ID'} before placing the order.`);
+        return;
+      }
+
+      const extraInfo = inputField ? inputField.value.trim() : 'N/A';
+
+      alert(`✅ Order Placed!\n\nItem: ${selectedQuantity} x ${selectedItem}\nPayment Method: ${method}\nDetails: ${extraInfo}`);
+    });
+  </script>
+
+</body>
+
+</html>
